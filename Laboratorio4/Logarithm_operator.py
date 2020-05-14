@@ -6,7 +6,11 @@ import sys
 
 
 def logarithm_operator(constant, data_pixel):
-    return constant * (math.log(1 + data_pixel, 10))
+    return constant * math.log(1 + data_pixel, 10)
+
+
+def square_root_operator(constant, data_pixel):
+    return constant * math.sqrt(data_pixel)
 
 
 def solve(img, constant):
@@ -14,23 +18,16 @@ def solve(img, constant):
     for i in range(cols):
         for j in range(rows):
             img[i][j] = logarithm_operator(constant, img[i][j])
-    cv.imshow("Image changed", img)
+    cv.imshow("Image changed with constant " + str(constant), img)
 
 
-def name_to_save_image(a):
-    if a == 1:
-        return "Image_converted"
-    elif a == 2:
-        return "Image_converted_2"
-    elif a == 3:
-        return "Image_chapel_1"
-    else:
-        return "Image_chapel_2"
+def name_to_save_image(a, constant):
+    return "Image_result_" + str(a) + "_" + str(constant)
 
 
 original = cv.imread("log_1.jpg")
 
-state = 4
+state = 1
 show_last = False
 
 if original is None:
@@ -38,9 +35,10 @@ if original is None:
 
 image = cv.cvtColor(original, cv.COLOR_BGR2GRAY)
 cv.imshow("Main Image", image)
-solve(image, 100)
+value = 200
+solve(image, value)
 
 k = cv.waitKey(0)
 if k == ord("s"):
-    name = name_to_save_image(state) + ".png"
+    name = name_to_save_image(state, value) + ".png"
     cv.imwrite(name, image)
