@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "Pages/header.html" %}
+  <body>
+    {% include "Pages/cabecera.html" %}
+
+    {% block centro %}
+
+    {% endblock centro %}
+
+
+
+    {% include "Pages/footer.html" %}
+    <!-- Latest jQuery form server -->
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <!-- Bootstrap JS form CDN -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    {% block scripts %}
+
+    {% endblock scripts %}
+  </body>
+</html>
