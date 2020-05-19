@@ -1,5 +1,9 @@
 {% extends "../base.html" %}
 {% block centro %}
-<input type="file">
 
+<form method = "post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" id="Original" name="Original">
+        <button type="submit">Upload</button>
+</form>
 {% endblock centro %}
