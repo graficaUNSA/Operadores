@@ -1,6 +1,5 @@
 import cv2 as cv
 import numpy as np
-import os
 
 
 def raise_power_operator(constant, second_constant, data_pixel):
@@ -15,15 +14,13 @@ def logarithm_operator(constant, data_pixel):
     return constant * np.log10(1 + data_pixel)
 
 
-def get_original_file_extra(path):
-    return [obj for obj in os.listdir(path) if os.path.isfile(path + "/" + obj)][0]
-
-
-def solve(path, name, check, constant=0, second_constant=0):
+def solve(path, name, check, constant, second_constant):
     image = cv.imread(path + "/" + name)
+    if image is None:
+        print("fallo")
+
     if check == 1:
-        g = np.uint8(exponential_operator(constant, second_constant, np.copy(image)))
-        cv.imwrite(path+"/exponential.png", g)
-    else:
-        print("nada")
+        g = np.uint8(exponential_operator(constant, second_constant, image))
+        cv.imwrite(path+"/exponential_"+str(constant)+"_"+str(second_constant)+".png", g)
+
 

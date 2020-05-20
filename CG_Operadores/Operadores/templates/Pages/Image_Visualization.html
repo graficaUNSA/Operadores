@@ -1,7 +1,74 @@
 {% extends "../base.html" %}
+{% load static %}
+
 {% block centro %}
 
-<h1> Imagen_Original </h1>
-<img src="{{ imagen }}">
-<img src="{{ imagen_exponential }}">
+
+<div class="container">
+    <form id="Change_Image">
+        {% csrf_token %}
+        <h3> Imagen_Original </h3>
+        <img src="{{ imagen }}">
+        <input type="hidden" id="camino" name="camino" value="{{camino}}" >
+        <input type="hidden" id="nombre" name="nombre" value="{{nombre}}" >
+        <div class="form">
+            <select name="algoritmo" id="algoritmo">
+                <option value=1>Thresholding</option>
+                <option value=2>Contrast stretching</option>
+                <option value=3>Ecualización de histograma</option>
+                <option value=4>Operador logaritmico</option>
+                <option value=5>Operador raiz</option>
+                <option value=6 selected>Operador exponencial</option>
+                <option value=7>Operador raise to power</option>
+            </select>
+            <div class="form-group">
+                <label for="constante">Constante: </label>
+                <input type="number" step="0.01" id="constante" name="constante">
+            </div>
+            <div class="form-group">
+                 <label for="constante1">Contante1: </label>
+                <input type="number" step="0.01" id="constante1" name="constante1">
+            </div>
+            <button type="submit"> Utilizar</button>
+        </div>
+    </form>
+</div>
+
+<br>
+<div class="container">
+    <h2> Imagen_Modificada con Operador Exponencial </h2>
+    <img src="" id="img_exp" name="img_exp">
+    <input type="hidden" value="No hay Data, fallo" id="Check" name="Check">
+</div>
+
 {% endblock centro %}
+
+
+{% block codes_js %}
+<script src="{% static 'js/funciones.js' %}"></script>
+
+<script>
+        $("#Change_Image").submit(function (e) {
+            e.preventDefault();
+            var serializedData = $(this).serializeObject();
+            console.log(serializedData);
+            var variable1 = $(nombre).val();
+            var variable2= $(algoritmo).val();
+            var url_to_send = get_url_to_send(variable1,variable2);
+            $.ajax({
+                type: 'POST',
+                url: url_to_send,
+                data: serializedData,
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (response) {
+                    // alert the error if any error occured
+                   $(Check).attr("type","readonly");
+                   console.log(response);
+                }
+            })
+        })
+</script>
+
+{% endblock codes_js %}
