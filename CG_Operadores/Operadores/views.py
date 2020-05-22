@@ -32,12 +32,12 @@ def image_exponential(request, name):
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
         constante1 = float(request.POST['constante1'])
-        estado, name_image = solve_exponential(path, values, constante, constante1)
+        estado, name_image, npath = solve_exponential(path, values, constante, constante1)
         if estado:
             return JsonResponse({
                 'nombre': name_image,
-                'camino': path,
-                'imagen': "/media/" + name + "/" + name_image
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
             })
         else:
             return JsonResponse({'State': 'fail'})
@@ -50,12 +50,12 @@ def image_logarithm(request, name):
         path = request.POST['camino']
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
-        estado, name_image = solve_logarithm(path, values, constante)
+        estado, name_image, npath = solve_logarithm(path, values, constante)
         if estado:
             return JsonResponse({
                 'nombre': name_image,
-                'camino': path,
-                'imagen': "/media/" + name + "/" + name_image
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
             })
         else:
             return JsonResponse({'State': 'fail'})
@@ -69,12 +69,12 @@ def image_raise_power(request, name):
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
         constante1 = float(request.POST['constante1'])
-        estado, name_image = solve_raise_power(path, values, constante, constante1)
+        estado, name_image, npath = solve_raise_power(path, values, constante, constante1)
         if estado:
             return JsonResponse({
                 'nombre': name_image,
-                'camino': path,
-                'imagen': "/media/" + name + "/" + name_image
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
             })
         else:
             return JsonResponse({'State': 'fail'})
@@ -87,12 +87,12 @@ def image_square_root(request, name):
         path = request.POST['camino']
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
-        estado, name_image = solve_square_root(path, values, constante)
+        estado, name_image, npath = solve_square_root(path, values, constante)
         if estado:
             return JsonResponse({
                 'nombre': name_image,
-                'camino': path,
-                'imagen': "/media/" + name + "/" + name_image
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
             })
         else:
             return JsonResponse({'State': 'fail'})
@@ -106,12 +106,12 @@ def image_thresholding(request, name):
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
         constante1 = float(request.POST['constante1'])
-        estado, name_image = solve_thresholding(path, values, constante, constante1)
+        estado, name_image, npath = solve_thresholding(path, values, constante, constante1)
         if estado:
             return JsonResponse({
                 'nombre': name_image,
-                'camino': path,
-                'imagen': "/media/" + name + "/" + name_image
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
             })
         else:
             return JsonResponse({'State': 'fail'})
