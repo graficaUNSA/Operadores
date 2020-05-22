@@ -10,8 +10,8 @@ import shutil
 from .utils import *
 # Create your views here.
 
-def get_original_file_extra(path):
-    return [obj for obj in os.listdir(path) if os.path.isfile(path + "/" + obj)][0]
+
+
 
 
 def index(request):
@@ -35,20 +35,26 @@ def image_exponential(request, name):
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
         constante1 = float(request.POST['constante1'])
-        solve(path, values, 1, constante, constante1)
-        return JsonResponse({'Estado': 'Works'})
+        estado, name_image = solve_exponential(path, values, constante, constante1)
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': path,
+                'imagen': "/media/" + name + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
     else:
-        return JsonResponse({'Estado': 'fallo'})
+        return JsonResponse({'State': 'fail'})
 
 
 def operators(request, name):
     path = MEDIA_ROOT + "/" + name
-    values = get_original_file_extra(path)
+    values = get_original_file_extra(path, name)
     send_page = {}
     send_page['imagen'] = "/media/" + name + "/" + values
     send_page['camino'] = path
     send_page['nombre'] = values
     # send_page['imagen_exponential'] = "/media/" + name + "/" + "exponential.png"
     return render(request, 'Pages/Image_Visualization.html', send_page)
-
 
