@@ -11,9 +11,6 @@ from .utils import *
 # Create your views here.
 
 
-
-
-
 def index(request):
     if request.method == 'POST':
         my_file = request.FILES['Original']
@@ -54,6 +51,62 @@ def image_logarithm(request, name):
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
         estado, name_image = solve_logarithm(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': path,
+                'imagen': "/media/" + name + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_raise_power(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        constante1 = float(request.POST['constante1'])
+        estado, name_image = solve_raise_power(path, values, constante, constante1)
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': path,
+                'imagen': "/media/" + name + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_square_root(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        estado, name_image = solve_square_root(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': path,
+                'imagen': "/media/" + name + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_thresholding(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        constante1 = float(request.POST['constante1'])
+        estado, name_image = solve_thresholding(path, values, constante, constante1)
         if estado:
             return JsonResponse({
                 'nombre': name_image,
