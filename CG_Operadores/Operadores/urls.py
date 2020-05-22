@@ -11,7 +11,7 @@ urlpatterns = [
     path('img/<str:name>', views.operators, name='operators'),
     path('img/<str:name>/data_thresholding', views.image_thresholding),
     path('img/<str:name>/data_contrast', views.image_contrast_streching),
-    path('img/<str:name>/data_equalization', views.image_exponential),
+    path('img/<str:name>/data_equalization', views.image_histogram_equalization),
     path('img/<str:name>/data_exponential', views.image_exponential),
     path('img/<str:name>/data_logarithm', views.image_logarithm),
     path('img/<str:name>/data_square', views.image_square_root),

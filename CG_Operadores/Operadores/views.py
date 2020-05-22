@@ -138,6 +138,27 @@ def image_thresholding(request, name):
         return JsonResponse({'State': 'fail'})
 
 
+def image_histogram_equalization(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constanteX_1 = int(request.POST['constanteX_1'])
+        constanteY_1 = int(request.POST['constanteY_1'])
+        constanteX_2 = int(request.POST['constanteX_2'])
+        constanteY_2 = int(request.POST['constanteY_2'])
+        estado, name_image, npath = solve_histogram_equalization(path, values, (constanteX_1, constanteY_1), (constanteX_2, constanteY_2))
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
 def operators(request, name):
     path = MEDIA_ROOT + "/" + name
     values = get_original_file_extra(path, name)

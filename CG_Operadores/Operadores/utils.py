@@ -3,6 +3,12 @@ import numpy as np
 import os
 import shutil
 from CG_Operadores.settings import MEDIA_ROOT
+import math
+from matplotlib import pyplot as plt
+
+
+def histogram_equalization(img, data):
+    return np.where(img, data[img], 0)
 
 
 def contrast_stretching_operator(image_con, values, limit_inf=0, limit_sup=255):
@@ -141,6 +147,60 @@ def solve_contrast_streching(path, name, constant, constant1):
     val = get_ranges_limits(get_ranges(image), constant, constant1)
     g = np.uint8(contrast_stretching_operator(image, val))
     name_to_archive = "Contrast_Streching_of_"+name+"_"+str(constant)+"_"+str(constant1)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def get_histogram_amount(img):
+    f = plt.hist(img.ravel(), 256, [0, 256])
+    return f[0]
+
+
+def get_new_intensities(img, amount_bits=8):
+    values = get_histogram_amount(img)
+    cols, rows = img.shape
+    length_pixels = math.pow(2, amount_bits)
+    probabilities = values / (cols*rows)
+    intensities = np.array([0]*len(probabilities))
+    accumulate = 0
+    for i in range(len(probabilities)):
+        accumulate += probabilities[i]
+        intensities[i] = math.floor((length_pixels - 1) * accumulate)
+    return intensities
+
+
+def solve_extra(img, sub_image=False, p_start1=None, p_end1=None):
+    data = []
+    if sub_image:
+        blank_image = np.copy(img[p_start1[0]:p_end1[0] + 1, p_start1[1]:p_end1[1] + 1])
+        data = get_new_intensities(blank_image)
+    else:
+        data = get_new_intensities(img)
+
+    g = histogram_equalization(np.copy(img), data)
+    return g
+
+
+def solve_histogram_equalization(path, name, constant, constant1):
+    image = cv.imread(path + "/" + name)
+    message_failed = "Didn't create file"
+    if image is None:
+        return False, message_failed
+
+    g = np.copy(image)
+    indicator1 = True
+    if constant == 0 and constant1 == 0:
+        indicator1 = False
+
+    for i in range(3):
+        if indicator1:
+            g[:, :, i] = solve_extra(g[:, :, i], indicator1, constant, constant1)
+        else:
+            g[:, :, i] = solve_extra(g[:, :, i])
+
+    name_to_archive = "Histogram_equalization_of_"+name+"_"+str(constant)+"_"+str(constant1)+".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
     cv.imwrite(ubication_final + "/" + name_to_archive, g)
