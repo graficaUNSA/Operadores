@@ -48,6 +48,24 @@ def image_exponential(request, name):
         return JsonResponse({'State': 'fail'})
 
 
+def image_logarithm(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        estado, name_image = solve_logarithm(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': path,
+                'imagen': "/media/" + name + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
 def operators(request, name):
     path = MEDIA_ROOT + "/" + name
     values = get_original_file_extra(path, name)

@@ -13,7 +13,7 @@ urlpatterns = [
     path('img/<str:name>/data_contrast', views.image_exponential),
     path('img/<str:name>/data_equalization', views.image_exponential),
     path('img/<str:name>/data_exponential', views.image_exponential),
-    path('img/<str:name>/data_logarithm', views.image_exponential),
+    path('img/<str:name>/data_logarithm', views.image_logarithm),
     path('img/<str:name>/data_square', views.image_exponential),
     path('img/<str:name>/data_pow', views.image_exponential),
 
