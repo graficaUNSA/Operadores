@@ -82,6 +82,25 @@ def image_raise_power(request, name):
         return JsonResponse({'State': 'fail'})
 
 
+def image_contrast_streching(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        constante1 = float(request.POST['constante1'])
+        estado, name_image, npath = solve_contrast_streching(path, values, constante, constante1)
+        if estado:
+            return JsonResponse({
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
 def image_square_root(request, name):
     if request.method == 'POST':
         path = request.POST['camino']
