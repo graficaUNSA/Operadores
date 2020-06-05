@@ -35,6 +35,7 @@ def image_exponential(request, name):
         estado, name_image, npath = solve_exponential(path, values, constante, constante1)
         if estado:
             return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image
@@ -53,6 +54,7 @@ def image_logarithm(request, name):
         estado, name_image, npath = solve_logarithm(path, values, constante)
         if estado:
             return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image
@@ -72,6 +74,83 @@ def image_raise_power(request, name):
         estado, name_image, npath = solve_raise_power(path, values, constante, constante1)
         if estado:
             return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_addition_const(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        estado, name_image, npath = solve_addition_constant(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_difference_const(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        estado, name_image, npath = solve_difference_constant(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_dot_const(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        estado, name_image, npath = solve_dot_constant(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_division_const(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        constante = float(request.POST['constante'])
+        estado, name_image, npath = solve_division_constant(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image
@@ -91,6 +170,7 @@ def image_contrast_streching(request, name):
         estado, name_image, npath = solve_contrast_streching(path, values, constante, constante1)
         if estado:
             return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image
@@ -109,6 +189,7 @@ def image_square_root(request, name):
         estado, name_image, npath = solve_square_root(path, values, constante)
         if estado:
             return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image
@@ -128,6 +209,7 @@ def image_thresholding(request, name):
         estado, name_image, npath = solve_thresholding(path, values, constante, constante1)
         if estado:
             return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image
@@ -149,6 +231,7 @@ def image_histogram_equalization(request, name):
         estado, name_image, npath = solve_histogram_equalization(path, values, (constanteX_1, constanteY_1), (constanteX_2, constanteY_2))
         if estado:
             return JsonResponse({
+                'Estado': "OK",
                 'nombre': name_image,
                 'camino': npath,
                 'imagen': "/media/" + name_image + "/" + name_image

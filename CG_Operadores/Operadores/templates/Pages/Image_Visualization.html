@@ -5,7 +5,7 @@
 
 <div class="container text-center h-100 d-flex justify-content-center align-items-center">
 <div class="container">
-    <form id="Change_Image">
+    <form id="Change_Image" enctype="multipart/form-data">
         {% csrf_token %}
         <h2 class="text-primary" > Imagen_Original </h2>
 
@@ -24,7 +24,20 @@
                 <option value=5>Operador raiz</option>
                 <option value=6>Operador exponencial</option>
                 <option value=7>Operador raise to power</option>
+                <option value=8>Sumar</option>
+                <option value=9>Restar</option>
+                <option value=10>Multiplicar</option>
+                <option value=11>Dividir</option>
+                <option value=12>Blending</option>
             </select>
+            <br>
+            <div id = "aritmetica">
+                <select name="op_aritmeticas" id="op_aritmeticas" class="form-control">
+                    <option value=1>Con constante</option>
+                    <option value=2>Con imagenes</option>
+                </select>
+            </div>
+
             <br>
             <div id ='bot'>
                 <div class="form-group" id="const1">
@@ -43,12 +56,15 @@
                      <label for="constante3">Constante4: </label>
                     <input type="number" step="0.01" id="constante3" name="constante3">
                 </div>
+                <div class="form-group" id="const5">
+                    <label for="constante5">Otra Imagen: </label>
+                    <input type="file" id="constante5" name="Original">
+                </div>
             </div>
             <button type="submit" class="btn btn-primary"> Utilizar</button>
         </div>
     </form>
 </div>
-
 <br>
 <div id="resul" class="container">
     <h2 id="enun" class="text-primary"> Imagen_Modificada con Operador Exponencial </h2>
@@ -72,6 +88,7 @@
 {% block codes_js %}
 <script src="{% static 'js/funciones.js' %}"></script>
 <script src="{% static 'js/tokens.js' %}"></script>
+<script src="{% static 'js/check_aritmetica.js' %}"></script>
 
 <script>
 
@@ -126,5 +143,6 @@
             })
         })
 </script>
+
 
 {% endblock codes_js %}

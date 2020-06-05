@@ -25,9 +25,25 @@ function conversion_value_to_name(value)
     {
         second_part = "data_exponential";
     }
-    else
+    else if(value == 7)
     {
         second_part = "data_pow";
+    }
+    else if(value == 8)
+    {
+        second_part = "data_addition";
+    }
+    else if(value == 9)
+    {
+        second_part = "data_difference";
+    }
+    else if(value == 10)
+    {
+        second_part = "data_dot";
+    }
+    else if(value == 11)
+    {
+        second_part = "data_division";
     }
     return second_part;
 }

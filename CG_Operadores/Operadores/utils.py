@@ -106,6 +106,7 @@ def solve_thresholding(path, name, constant, constant1):
 
 
 # suma y  resta de imagenes
+# Falta con imagenes
 
 def add_pixel(img1, img2):
     return img1 + img2
@@ -127,15 +128,67 @@ def get_max_values(img, img1):
     return rows1, columns1
 
 
-def solve_addition(path, name, constant, constant1):
+def solve_addition_constant(path, name, constant):
     image = cv.imread(path + "/" + name)
     message_failed = "Didn't create file"
     if image is None:
         return False, message_failed
 
-    val = get_ranges_limits(get_histogram(image), constant, constant1)
-    g = np.uint8(contrast_stretching_operator(image, val))
-    name_to_archive = "Contrast_Streching_of_"+name+"_"+str(constant)+"_"+str(constant1)+".png"
+    g = np.uint8(add_pixel(image, constant))
+    name_to_archive = "Addition_of_"+name+"_"+str(constant)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def solve_difference_constant(path, name, constant):
+    image = cv.imread(path + "/" + name)
+    message_failed = "Didn't create file"
+    if image is None:
+        return False, message_failed
+
+    g = np.uint8(difference_pixel(image, constant))
+    name_to_archive = "Difference_of_"+name+"_"+str(constant)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+# multiplicación y division
+# Falta con imagenes
+
+def dot_images(img1, img2):
+    return img1 * img2
+
+
+def division_image(img1, img2):
+    return img1/img2
+
+
+def solve_dot_constant(path, name, constant):
+    image = cv.imread(path + "/" + name)
+    message_failed = "Didn't create file"
+    if image is None:
+        return False, message_failed
+
+    g = np.uint8(dot_images(image, constant))
+    name_to_archive = "Dot_of_"+name+"_"+str(constant)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def solve_division_constant(path, name, constant):
+    image = cv.imread(path + "/" + name)
+    message_failed = "Didn't create file"
+    if image is None:
+        return False, message_failed
+
+    g = np.uint8(division_image(image, constant))
+    name_to_archive = "Division_of_"+name+"_"+str(constant)+".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
     cv.imwrite(ubication_final + "/" + name_to_archive, g)

@@ -16,6 +16,10 @@ urlpatterns = [
     path('img/<str:name>/data_logarithm', views.image_logarithm),
     path('img/<str:name>/data_square', views.image_square_root),
     path('img/<str:name>/data_pow', views.image_raise_power),
+    path('img/<str:name>/data_addition', views.image_addition_const),
+    path('img/<str:name>/data_difference', views.image_difference_const),
+    path('img/<str:name>/data_dot', views.image_dot_const),
+    path('img/<str:name>/data_division', views.image_division_const),
 
 ]
 
