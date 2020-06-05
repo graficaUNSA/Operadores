@@ -10,7 +10,9 @@ def info():
     print("2. Dot of image per a constant")
     print("3. Division of two images")
     print()
-
+    
+def thresholding_operator(img, r1, r2):
+    return np.where((r1 <= img) & (img <= r2), 255, 0)
 
 def contrast_stretching_operator(image_con, values, limit_inf=0, limit_sup=255):
     for i in range(3):
@@ -47,7 +49,10 @@ def image_div_const(img1):
     return img1/const
 
 def division_image(img1,img2):
-    return img1/img2
+    div = np.divide(img1, img2)
+    # escalado de imagen
+    div2 = (div - div.min()) * (1/(div.max() - div.min()) * 255)
+    return div2
 
 def blending(img1,img2):
     const = float(input("Enter constant [0 - 1]: "))
@@ -119,7 +124,15 @@ if __name__=="__main__":
     val = get_ranges_limits(get_histogram(g),0, 30)
     g = np.uint8(contrast_stretching_operator(np.copy(g), val))
     '''
-
+    '''
+    ejercicio 2
+    g = np.uint8(division_image(fst_image, scn_image))
+    cv.imshow("Main Image1", g)
+    g = np.uint8(thresholding_operator(np.copy(g),170,255))
+    cv.imshow("Main Image2", g)
+    val = get_ranges_limits(get_histogram(g), 175, 255)
+    g = np.uint8(contrast_stretching_operator(np.copy(g), val))
+    '''
     #ejercicio 4
     g = np.uint8(blending(fst_image,scn_image))
 
