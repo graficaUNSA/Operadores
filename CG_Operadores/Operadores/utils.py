@@ -104,6 +104,44 @@ def solve_thresholding(path, name, constant, constant1):
     cv.imwrite(ubication_final + "/" + name_to_archive, g)
     return True, name_to_archive, ubication_final
 
+
+# suma y  resta de imagenes
+
+def add_pixel(img1, img2):
+    return img1 + img2
+
+
+def difference_pixel(img1, img2):
+    return np.abs(img1 - img2)
+
+
+def rescale(img, img1, value):
+    first_image = cv.resize(img, value)
+    second_image = cv.resize(img1, value)
+    return first_image, second_image
+
+
+def get_max_values(img, img1):
+    rows1 = max(img.shape[0], img1.shape[0])
+    columns1 = max(img.shape[1], img1.shape[1])
+    return rows1, columns1
+
+
+def solve_addition(path, name, constant, constant1):
+    image = cv.imread(path + "/" + name)
+    message_failed = "Didn't create file"
+    if image is None:
+        return False, message_failed
+
+    val = get_ranges_limits(get_histogram(image), constant, constant1)
+    g = np.uint8(contrast_stretching_operator(image, val))
+    name_to_archive = "Contrast_Streching_of_"+name+"_"+str(constant)+"_"+str(constant1)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
 #Funciones Contrast_Streching
 def get_ranges(list_colors):
     least_value = 0
@@ -144,7 +182,7 @@ def solve_contrast_streching(path, name, constant, constant1):
     if image is None:
         return False, message_failed
 
-    val = get_ranges_limits(get_ranges(image), constant, constant1)
+    val = get_ranges_limits(get_histogram(image), constant, constant1)
     g = np.uint8(contrast_stretching_operator(image, val))
     name_to_archive = "Contrast_Streching_of_"+name+"_"+str(constant)+"_"+str(constant1)+".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
@@ -191,7 +229,7 @@ def solve_histogram_equalization(path, name, constant, constant1):
 
     g = np.copy(image)
     indicator1 = True
-    if constant == 0 and constant1 == 0:
+    if constant == (0, 0) and constant1 == (0, 0):
         indicator1 = False
 
     for i in range(3):

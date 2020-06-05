@@ -3,52 +3,101 @@
 
 {% block centro %}
 
-
+<div class="container text-center h-100 d-flex justify-content-center align-items-center">
 <div class="container">
     <form id="Change_Image">
         {% csrf_token %}
-        <h3> Imagen_Original </h3>
-        <img src="{{ imagen }}">
+        <h2 class="text-primary" > Imagen_Original </h2>
+
+        <img src="{{ imagen }}"  id = "ori_img" class="img-thumbnail">
+        <br>
         <input type="hidden" id="camino" name="camino" value="{{camino}}" >
         <input type="hidden" id="nombre" name="nombre" value="{{nombre}}" >
-        <div class="form">
-            <select name="algoritmo" id="algoritmo">
+        <br>
+        <div class="col-xs-3">
+            <select name="algoritmo" id="algoritmo" class="form-control">
+                <option value="''"> Selecione un Operador </option>
                 <option value=1>Thresholding</option>
                 <option value=2>Contrast stretching</option>
                 <option value=3>Ecualización de histograma</option>
                 <option value=4>Operador logaritmico</option>
                 <option value=5>Operador raiz</option>
-                <option value=6 selected>Operador exponencial</option>
+                <option value=6>Operador exponencial</option>
                 <option value=7>Operador raise to power</option>
             </select>
-            <div class="form-group">
-                <label for="constante">Constante: </label>
-                <input type="number" step="0.01" id="constante" name="constante">
+            <br>
+            <div id ='bot'>
+                <div class="form-group" id="const1">
+                    <label for="constante">Constante1: </label>
+                    <input type="number" step="0.01" id="constante" name="constante">
+                </div>
+                <div class="form-group" id="const2">
+                     <label for="constante1">Constante2: </label>
+                    <input type="number" step="0.01" id="constante1" name="constante1">
+                </div>
+                <div class="form-group" id="const3">
+                    <label for="constante2">Constante3: </label>
+                    <input type="number" step="0.01" id="constante2" name="constante2">
+                </div>
+                <div class="form-group" id="const4">
+                     <label for="constante3">Constante4: </label>
+                    <input type="number" step="0.01" id="constante3" name="constante3">
+                </div>
             </div>
-            <div class="form-group">
-                 <label for="constante1">Contante1: </label>
-                <input type="number" step="0.01" id="constante1" name="constante1">
-            </div>
-            <button type="submit"> Utilizar</button>
+            <button type="submit" class="btn btn-primary"> Utilizar</button>
         </div>
     </form>
 </div>
 
 <br>
-<div class="container">
-    <h2> Imagen_Modificada con Operador Exponencial </h2>
-    <img src="" id="img_exp" name="img_exp">
+<div id="resul" class="container">
+    <h2 id="enun" class="text-primary"> Imagen_Modificada con Operador Exponencial </h2>
+    <img src="" id="img_exp" name="img_exp" class="img-thumbnail">
     <input type="hidden" value="No hay Data, fallo" id="Check" name="Check">
+    <br>
+    <button onclick="usa_este()" class="btn btn-primary">Usar Este</button>
 </div>
 
+</div>
+
+<div class="container center">
+    <form action="{% url 'Ops:index' %}">
+        <button class="btn btn-primary">Regresar</button>
+    </form>
+
+</div>
 {% endblock centro %}
 
 
 {% block codes_js %}
 <script src="{% static 'js/funciones.js' %}"></script>
+<script src="{% static 'js/tokens.js' %}"></script>
 
 <script>
+
+    function usa_este(){
+       console.log($(nombre).val());
+       console.log($(camino).val());
+
+     var direccion = new String(document.getElementById('img_exp').src);
+     console.log(direccion);
+     document.getElementById('ori_img').src=direccion;
+     document.getElementById('nombre').value = nnombre;
+     document.getElementById('camino').value = ncamino;
+     console.log($(nombre).val());
+     console.log($(camino).val());
+    }
+</script>
+
+
+
+
+<script>
+        var nnombre;
+        var ncamino;
         $("#Change_Image").submit(function (e) {
+            console.log($(nombre).val());
+            console.log($(camino).val());
             e.preventDefault();
             var serializedData = $(this).serializeObject();
             console.log(serializedData);
@@ -60,7 +109,14 @@
                 url: url_to_send,
                 data: serializedData,
                 success: function (response) {
-                    console.log(response);
+                    if(response.Estado == "OK"){
+                        console.log(response.nombre);
+                        console.log(response.camino);
+                        console.log(response.imagen);
+                        document.getElementById('img_exp').src=response.imagen;
+                        nnombre = response.nombre;
+                        ncamino = response.camino;
+                    }
                 },
                 error: function (response) {
                     // alert the error if any error occured
