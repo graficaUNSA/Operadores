@@ -118,8 +118,35 @@ $(document).ready(function(){
                 $('#bot').children('#const3').hide();
                 $('#bot').children('#const4').hide();
                 $('#bot').children('#const5').show();
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada mediante Blending");
+                break;
+               case "13":
+                $('#bot').children('#const1').hide();
+                $('#bot').children('#const2').hide();
+                $('#bot').children('#const3').hide();
+                $('#bot').children('#const4').hide();
+                $('#bot').children('#const5').show();
+                $('#aritmetica').hide();
+                $('#resul').children('#enun').text("Imagen_Modificada mediante AND");
+                break;
+               case "14":
+                $('#bot').children('#const1').hide();
+                $('#bot').children('#const2').hide();
+                $('#bot').children('#const3').hide();
+                $('#bot').children('#const4').hide();
+                $('#bot').children('#const5').show();
+                $('#aritmetica').hide();
+                $('#resul').children('#enun').text("Imagen_Modificada mediante OR");
+                break;
+               case "15":
+                $('#bot').children('#const1').hide();
+                $('#bot').children('#const2').hide();
+                $('#bot').children('#const3').hide();
+                $('#bot').children('#const4').hide();
+                $('#bot').children('#const5').show();
+                $('#aritmetica').hide();
+                $('#resul').children('#enun').text("Imagen_Modificada mediante XOR");
                 break;
              default:
                 console.log('default');

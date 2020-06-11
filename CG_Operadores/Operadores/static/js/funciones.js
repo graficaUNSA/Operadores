@@ -45,6 +45,22 @@ function conversion_value_to_name(value)
     {
         second_part = "data_division";
     }
+    else if(value == 12)
+    {
+        second_part = "data_blending";
+    }
+    else if(value == 13)
+    {
+        second_part = "data_AND";
+    }
+    else if(value == 14)
+    {
+        second_part = "data_OR";
+    }
+    else if(value == 15)
+    {
+        second_part = "data_XOR";
+    }
     return second_part;
 }
 
