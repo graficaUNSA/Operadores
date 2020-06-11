@@ -16,10 +16,15 @@ urlpatterns = [
     path('img/<str:name>/data_logarithm', views.image_logarithm),
     path('img/<str:name>/data_square', views.image_square_root),
     path('img/<str:name>/data_pow', views.image_raise_power),
-    path('img/<str:name>/data_addition', views.image_addition_const),
-    path('img/<str:name>/data_difference', views.image_difference_const),
-    path('img/<str:name>/data_dot', views.image_dot_const),
-    path('img/<str:name>/data_division', views.image_division_const),
+    path('img/<str:name>/data_addition', views.image_addition),
+    path('img/<str:name>/data_difference', views.image_difference),
+    path('img/<str:name>/data_dot', views.image_dot),
+    path('img/<str:name>/data_division', views.image_division),
+    path('img/<str:name>/data_blending', views.image_blending),
+    path('img/<str:name>/data_AND', views.image_AND),
+    path('img/<str:name>/data_OR', views.image_OR),
+    path('img/<str:name>/data_XOR', views.image_XOR),
+    path('img/<str:name>/up_image', views.up_image),
 
 ]
 

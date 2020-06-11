@@ -1,12 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
-from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from CG_Operadores.settings import MEDIA_ROOT
-from django.views.decorators.csrf import csrf_protect
-import os
-import shutil
 from .utils import *
 # Create your views here.
 
@@ -85,12 +80,16 @@ def image_raise_power(request, name):
         return JsonResponse({'State': 'fail'})
 
 
-def image_addition_const(request, name):
+def image_addition(request, name):
     if request.method == 'POST':
         path = request.POST['camino']
         values = request.POST['nombre']
-        constante = float(request.POST['constante'])
-        estado, name_image, npath = solve_addition_constant(path, values, constante)
+        constante = request.POST['constante']
+        checker = request.POST['helper']
+        if checker == "Without image":
+            constante = float(constante)
+
+        estado, name_image, npath = solve_addition(path, values, constante)
         if estado:
             return JsonResponse({
                 'Estado': "OK",
@@ -104,12 +103,15 @@ def image_addition_const(request, name):
         return JsonResponse({'State': 'fail'})
 
 
-def image_difference_const(request, name):
+def image_difference(request, name):
     if request.method == 'POST':
         path = request.POST['camino']
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
-        estado, name_image, npath = solve_difference_constant(path, values, constante)
+        checker = request.POST['helper']
+        if checker == "Without image":
+            constante = float(constante)
+        estado, name_image, npath = solve_difference(path, values, constante)
         if estado:
             return JsonResponse({
                 'Estado': "OK",
@@ -123,12 +125,15 @@ def image_difference_const(request, name):
         return JsonResponse({'State': 'fail'})
 
 
-def image_dot_const(request, name):
+def image_dot(request, name):
     if request.method == 'POST':
         path = request.POST['camino']
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
-        estado, name_image, npath = solve_dot_constant(path, values, constante)
+        checker = request.POST['helper']
+        if checker == "Without image":
+            constante = float(constante)
+        estado, name_image, npath = solve_dot(path, values, constante)
         if estado:
             return JsonResponse({
                 'Estado': "OK",
@@ -142,12 +147,92 @@ def image_dot_const(request, name):
         return JsonResponse({'State': 'fail'})
 
 
-def image_division_const(request, name):
+def image_division(request, name):
     if request.method == 'POST':
         path = request.POST['camino']
         values = request.POST['nombre']
         constante = float(request.POST['constante'])
-        estado, name_image, npath = solve_division_constant(path, values, constante)
+        checker = request.POST['helper']
+        if checker == "Without image":
+            constante = float(constante)
+        estado, name_image, npath = solve_division(path, values, constante)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_blending(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        another_image = request.POST['constante']
+        constante = float(request.POST['constante1'])
+        estado, name_image, npath = solve_blinding(path, values, another_image, constante)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_AND(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        another_image = request.POST['another_image']
+        estado, name_image, npath = solve_and(path, values, another_image)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_OR(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        another_image = request.POST['another_image']
+        estado, name_image, npath = solve_or(path, values, another_image)
+        if estado:
+            return JsonResponse({
+                'Estado': "OK",
+                'nombre': name_image,
+                'camino': npath,
+                'imagen': "/media/" + name_image + "/" + name_image
+            })
+        else:
+            return JsonResponse({'State': 'fail'})
+    else:
+        return JsonResponse({'State': 'fail'})
+
+
+def image_XOR(request, name):
+    if request.method == 'POST':
+        path = request.POST['camino']
+        values = request.POST['nombre']
+        another_image = request.POST['another_image']
+        estado, name_image, npath = solve_xor(path, values, another_image)
         if estado:
             return JsonResponse({
                 'Estado': "OK",
@@ -252,3 +337,16 @@ def operators(request, name):
     # send_page['imagen_exponential'] = "/media/" + name + "/" + "exponential.png"
     return render(request, 'Pages/Image_Visualization.html', send_page)
 
+
+def up_image(request, name):
+    if request.method == 'POST':
+        my_file = request.FILES['Original']
+        ubication_image = MEDIA_ROOT + "/" + name
+        fs = FileSystemStorage(location=ubication_image)
+        filename = fs.save(my_file.name, my_file)
+        return JsonResponse({
+            'Estado': "OK",
+            'nombre': my_file.name,
+            'imagen': "/media/" + name + "/" + my_file
+        })
+    return JsonResponse({'Estado': "Fail"})

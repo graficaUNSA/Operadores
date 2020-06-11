@@ -1,41 +1,9 @@
 import cv2 as cv
-import numpy as np
 import os
 import shutil
 from CG_Operadores.settings import MEDIA_ROOT
-import math
 from matplotlib import pyplot as plt
-
-
-def histogram_equalization(img, data):
-    return np.where(img, data[img], 0)
-
-
-def contrast_stretching_operator(image_con, values, limit_inf=0, limit_sup=255):
-    for i in range(3):
-        diference = values[i][1]-values[i][0]
-        image_con[:, :, i] = (image_con[:, :, i] - values[i][0]) * ((limit_sup-limit_inf)/diference) + limit_inf
-    return image_con
-
-
-def raise_power_operator(constant, second_constant, data_pixel):
-    return constant * np.power(data_pixel, second_constant)
-
-
-def exponential_operator(constant, second_constant, data_pixel):
-    return constant * (np.power(second_constant, data_pixel) - 1)
-
-
-def logarithm_operator(constant, data_pixel):
-    return constant * np.log10(1 + data_pixel)
-
-
-def square_root_operator(constant, data_pixel):
-    return constant * np.power(data_pixel, 0.5)
-
-
-def thresholding_operator(img, r1, r2):
-    return np.where((r1 <= img) & (img <= r2), 255, 0)
+from .algoritmos import *
 
 
 def solve_exponential(path, name, constant, second_constant):
@@ -106,15 +74,6 @@ def solve_thresholding(path, name, constant, constant1):
 
 
 # suma y  resta de imagenes
-# Falta con imagenes
-
-def add_pixel(img1, img2):
-    return img1 + img2
-
-
-def difference_pixel(img1, img2):
-    return np.abs(img1 - img2)
-
 
 def rescale(img, img1, value):
     first_image = cv.resize(img, value)
@@ -128,67 +87,163 @@ def get_max_values(img, img1):
     return rows1, columns1
 
 
-def solve_addition_constant(path, name, constant):
+def solve_addition(path, name, variable1):
     image = cv.imread(path + "/" + name)
     message_failed = "Didn't create file"
-    if image is None:
-        return False, message_failed
+    image1 = variable1
+    if type(variable1) != str:
+        if image is None:
+            return False, message_failed
+    else:
+        image1 = cv.imread(path + "/" + variable1)
+        if image is None or image1 is None:
+            return False, message_failed
 
-    g = np.uint8(add_pixel(image, constant))
-    name_to_archive = "Addition_of_"+name+"_"+str(constant)+".png"
+        max_ranges = get_max_values(image, image1)
+        image, image1 = rescale(image, image1, max_ranges)
+
+    g = np.uint8(add_pixel(image, image1))
+    name_to_archive = "Addition_of_"+name+"_"+str(variable1)+".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
     cv.imwrite(ubication_final + "/" + name_to_archive, g)
     return True, name_to_archive, ubication_final
 
 
-def solve_difference_constant(path, name, constant):
+def solve_difference(path, name, variable1):
     image = cv.imread(path + "/" + name)
     message_failed = "Didn't create file"
-    if image is None:
-        return False, message_failed
+    image1 = variable1
+    if type(variable1) != str:
+        if image is None:
+            return False, message_failed
+    else:
+        image1 = cv.imread(path + "/" + variable1)
+        if image is None or image1 is None:
+            return False, message_failed
 
-    g = np.uint8(difference_pixel(image, constant))
-    name_to_archive = "Difference_of_"+name+"_"+str(constant)+".png"
+        max_ranges = get_max_values(image, image1)
+        image, image1 = rescale(image, image1, max_ranges)
+
+    g = np.uint8(difference_pixel(image, image1))
+    name_to_archive = "Difference_of_"+name+"_"+str(variable1)+".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
     cv.imwrite(ubication_final + "/" + name_to_archive, g)
     return True, name_to_archive, ubication_final
 
 
-# multiplicación y division
-# Falta con imagenes
+# multiplicación, division, blinding
 
-def dot_images(img1, img2):
-    return img1 * img2
-
-
-def division_image(img1, img2):
-    return img1/img2
-
-
-def solve_dot_constant(path, name, constant):
+def solve_dot(path, name, variable1):
     image = cv.imread(path + "/" + name)
     message_failed = "Didn't create file"
-    if image is None:
-        return False, message_failed
+    image1 = variable1
+    if type(variable1) != str:
+        if image is None:
+            return False, message_failed
+    else:
+        image1 = cv.imread(path + "/" + variable1)
+        if image is None or image1 is None:
+            return False, message_failed
 
-    g = np.uint8(dot_images(image, constant))
-    name_to_archive = "Dot_of_"+name+"_"+str(constant)+".png"
+        max_ranges = get_max_values(image, image1)
+        image, image1 = rescale(image, image1, max_ranges)
+
+    g = np.uint8(dot_images(image, image1))
+    name_to_archive = "Dot_of_" + name + "_" + str(variable1) + ".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
     cv.imwrite(ubication_final + "/" + name_to_archive, g)
     return True, name_to_archive, ubication_final
 
 
-def solve_division_constant(path, name, constant):
+def solve_division(path, name, variable1):
     image = cv.imread(path + "/" + name)
     message_failed = "Didn't create file"
-    if image is None:
+    image1 = variable1
+    if type(variable1) != str:
+        if image is None:
+            return False, message_failed
+    else:
+        image1 = cv.imread(path + "/" + variable1)
+        if image is None or image1 is None:
+            return False, message_failed
+
+        max_ranges = get_max_values(image, image1)
+        image, image1 = rescale(image, image1, max_ranges)
+
+    g = np.uint8(division_image(image, image1))
+    name_to_archive = "Division_of_" + name + "_" + str(variable1) + ".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def solve_blinding(path, name, name1, variable1):
+    image = cv.imread(path + "/" + name)
+    message_failed = "Didn't create file"
+    image1 = cv.imread(path + "/" + name1)
+    if image is None or image1 is None:
         return False, message_failed
 
-    g = np.uint8(division_image(image, constant))
-    name_to_archive = "Division_of_"+name+"_"+str(constant)+".png"
+    max_ranges = get_max_values(image, image1)
+    image, image1 = rescale(image, image1, max_ranges)
+
+    g = np.uint8(blinding_image(image, image1, variable1))
+    name_to_archive = "blinding_of_" + name + "_" + name1 + ".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def solve_and(path, name, name1):
+    image = cv.imread(path + "/" + name)
+    image1 = cv.imread(path + "/" + name1)
+    message_failed = "Didn't create file"
+    if image is None or image1 is None:
+        return False, message_failed
+
+    max_ranges = get_max_values(image, image1)
+    img1, img2 = rescale(image, image1, max_ranges)
+    g = np.uint8(and_operator(img1, img2))
+    name_to_archive = "And_of_"+name+"_"+str(name1)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def solve_or(path, name, name1):
+    image = cv.imread(path + "/" + name)
+    image1 = cv.imread(path + "/" + name1)
+    message_failed = "Didn't create file"
+    if image is None or image1 is None:
+        return False, message_failed
+
+    max_ranges = get_max_values(image, image1)
+    img1, img2 = rescale(image, image1, max_ranges)
+    g = np.uint8(or_operator(img1, img2))
+    name_to_archive = "OR_of_"+name+"_"+str(name1)+".png"
+    ubication_final = MEDIA_ROOT + "/" + name_to_archive
+    check_folder(ubication_final)
+    cv.imwrite(ubication_final + "/" + name_to_archive, g)
+    return True, name_to_archive, ubication_final
+
+
+def solve_xor(path, name, name1):
+    image = cv.imread(path + "/" + name)
+    image1 = cv.imread(path + "/" + name1)
+    message_failed = "Didn't create file"
+    if image is None or image1 is None:
+        return False, message_failed
+
+    max_ranges = get_max_values(image, image1)
+    img1, img2 = rescale(image, image1, max_ranges)
+    g = np.uint8(xor_operator(img1, img2))
+    name_to_archive = "XOR_of_"+name+"_"+str(name1)+".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
     cv.imwrite(ubication_final + "/" + name_to_archive, g)
@@ -252,13 +307,13 @@ def get_histogram_amount(img):
 def get_new_intensities(img, amount_bits=8):
     values = get_histogram_amount(img)
     cols, rows = img.shape
-    length_pixels = math.pow(2, amount_bits)
+    length_pixels = 2**amount_bits
     probabilities = values / (cols*rows)
     intensities = np.array([0]*len(probabilities))
     accumulate = 0
     for i in range(len(probabilities)):
         accumulate += probabilities[i]
-        intensities[i] = math.floor((length_pixels - 1) * accumulate)
+        intensities[i] = int((length_pixels - 1) * accumulate)
     return intensities
 
 
