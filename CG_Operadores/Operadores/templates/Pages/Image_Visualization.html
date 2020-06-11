@@ -5,7 +5,7 @@
 
 <div class="container text-center h-100 d-flex justify-content-center align-items-center">
 <div class="container">
-    <form id="Change_Image" enctype="multipart/form-data">
+    <form method="POST" id="Change_Image" enctype="multipart/form-data">
         {% csrf_token %}
         <h2 class="text-primary" > Imagen_Original </h2>
 
@@ -60,8 +60,9 @@
                     <input type="number" step="0.01" id="constante3" name="constante3">
                 </div>
                 <div class="form-group" id="const5">
-                    <label for="constante5">Otra Imagen: </label>
-                    <input type="file" id="constante5" name="Original">
+                    <label for="file">Otra Imagen: </label>
+                    <input type="file" id="file" name="image">
+                    <img id="image">
                 </div>
             </div>
             <button type="submit" class="btn btn-primary"> Utilizar</button>
@@ -92,13 +93,27 @@
 <script src="{% static 'js/funciones.js' %}"></script>
 <script src="{% static 'js/tokens.js' %}"></script>
 <script src="{% static 'js/check_aritmetica.js' %}"></script>
+<script>
 
+    const $form = document.querySelector('#Change_Image');
+
+    const $image = document.querySelector('#image');
+    const $file = document.querySelector('#file');
+    function renderImage(formData) {
+      const file = formData.get('image');
+      const image = URL.createObjectURL(file);
+      $image.setAttribute('src', image);
+    }
+
+    $file.addEventListener('change', (event) => {
+      const formData = new FormData($form);
+      renderImage(formData);
+    })
+
+</script>
 <script>
 
     function usa_este(){
-       console.log($(nombre).val());
-       console.log($(camino).val());
-
      var direccion = new String(document.getElementById('img_exp').src);
      console.log(direccion);
      document.getElementById('ori_img').src=direccion;
@@ -115,12 +130,12 @@
 <script>
         var nnombre;
         var ncamino;
+
         $("#Change_Image").submit(function (e) {
             console.log($(nombre).val());
             console.log($(camino).val());
             e.preventDefault();
-            var serializedData = $(this).serializeObject();
-            console.log(serializedData);
+            var serializedData = new FormData(this); // $(this).serializeObject();
             var variable1 = $(nombre).val();
             var variable2= $(algoritmo).val();
             var url_to_send = get_url_to_send(variable1,variable2);
@@ -128,11 +143,10 @@
                 type: 'POST',
                 url: url_to_send,
                 data: serializedData,
+                processData: false,
+                contentType: false,
                 success: function (response) {
                     if(response.Estado == "OK"){
-                        console.log(response.nombre);
-                        console.log(response.camino);
-                        console.log(response.imagen);
                         document.getElementById('img_exp').src=response.imagen;
                         nnombre = response.nombre;
                         ncamino = response.camino;

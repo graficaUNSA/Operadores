@@ -4,6 +4,7 @@ import shutil
 from CG_Operadores.settings import MEDIA_ROOT
 from matplotlib import pyplot as plt
 from .algoritmos import *
+from django.core.files.storage import FileSystemStorage
 
 
 def solve_exponential(path, name, constant, second_constant):
@@ -364,3 +365,10 @@ def check_folder(ubication_final):
     if os.path.isdir(ubication_final):
         shutil.rmtree(ubication_final)
     os.mkdir(ubication_final)
+
+
+def up_image(my_file, name):
+    ubication_image = MEDIA_ROOT + "/" + name
+    fs = FileSystemStorage(location=ubication_image)
+    filename = fs.save(my_file.name, my_file)
+    return my_file.name
