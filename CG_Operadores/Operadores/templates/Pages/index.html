@@ -2,6 +2,33 @@
 
 {% block centro %}
 
+<div class="banner">
+	<div class="container">
+	    <div class="banner-text">
+	        <div class="banner-heading">
+                Procesamiento de Imágenes
+	        </div>
+	        <div class="banner-sub-heading">
+
+	        </div>
+
+            <div class="container text-center h-100 d-flex justify-content-center align-items-center">
+                <form method = "post" enctype="multipart/form-data" >
+                        {% csrf_token %}
+                        <input type="file" id="Original" name="Original" class="btn btn-warning text-dark btn-banner" >
+                        <br>
+                        <br>
+                        <button type="submit" class="btn btn-warning text-dark btn-banner" >Cargar</button>
+                </form>
+            </div>
+	    </div>
+	</div>
+
+</div>
+
+
+
+<!--
         <div class="container text-center h-100 d-flex justify-content-center align-items-center">
                 <form method = "post" enctype="multipart/form-data" >
                         {% csrf_token %}
@@ -9,5 +36,5 @@
                         <button type="submit">Upload</button>
                 </form>
         </div>
-
+-->
 {% endblock centro %}

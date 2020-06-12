@@ -1,8 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-  <body>
-    <img src="/home/jaime/Operadores/CG_Operadores/media/cat.98/cat.98.jpg" alt="">
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.css">
 
-  </body>
+    </head>
+    <body>
+
+
+
+        <div class="custom-file-container" data-upload-id="myUniqueUploadId">
+            <label>Upload File <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">&times;</a></label>
+
+            <label class="custom-file-container__custom-file" >
+                <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="*" multiple aria-label="Choose File">
+                <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
+                <span class="custom-file-container__custom-file__custom-file-control"></span>
+            </label>
+            <div class="custom-file-container__image-preview"></div>
+        </div>
+
+        <script src="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.js"></script>
+
+        <script>
+
+            var upload = new FileUploadWithPreview('myUniqueUploadId')
+        </script>
+
+
+    </body>
 </html>
