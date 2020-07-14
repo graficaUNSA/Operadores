@@ -1,10 +1,18 @@
-import cv2 as cv
 import os
 import shutil
 from CG_Operadores.settings import MEDIA_ROOT
 from matplotlib import pyplot as plt
 from .algoritmos import *
 from django.core.files.storage import FileSystemStorage
+import json
+from json import JSONEncoder
+
+
+class NumpyArrayEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)
 
 
 def solve_exponential(path, name, constant, second_constant):
@@ -85,7 +93,8 @@ def rescale(img, img1, value):
 def get_max_values(img, img1):
     rows1 = max(img.shape[0], img1.shape[0])
     columns1 = max(img.shape[1], img1.shape[1])
-    return rows1, columns1
+    # return rows1, columns1
+    return columns1, rows1
 
 
 def solve_addition(path, name, variable1):
@@ -175,6 +184,11 @@ def solve_division(path, name, variable1):
         image, image1 = rescale(image, image1, max_ranges)
 
     g = np.uint8(division_image(image, image1))
+    m_in = np.min(g)
+    m_ax = np.max(g)
+    d_max = 255
+    d_min = 0
+    g = np.uint8((g - m_in) * ((d_max - d_min) / (m_ax - m_in)) + d_min)
     name_to_archive = "Division_of_" + name + "_" + str(variable1) + ".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
@@ -192,7 +206,7 @@ def solve_blinding(path, name, name1, variable1):
     max_ranges = get_max_values(image, image1)
     image, image1 = rescale(image, image1, max_ranges)
 
-    g = np.uint8(blinding_image(image, image1, variable1))
+    g = np.uint8(blinding_image(image, image1, float(variable1)))
     name_to_archive = "blinding_of_" + name + "_" + name1 + ".png"
     ubication_final = MEDIA_ROOT + "/" + name_to_archive
     check_folder(ubication_final)
@@ -251,7 +265,45 @@ def solve_xor(path, name, name1):
     return True, name_to_archive, ubication_final
 
 
+# ----------------------------------------
+# Funciones para la solucion de corners
+# ----------------------------------------
+def solve_corners(path, name):
+    image = cv.imread(path + "/" + name)
+    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    conservating = filtro_conservating(gray)
+    thresh = thresholding_operator(conservating, 160, 255)
+    answer = detect_corners(thresh)
+    return True, answer
+
+
+def get_image_perspective(path, name, points_corners):
+    image = cv.imread(path + "/" + name)
+    points_corners = points_corners.split(",")
+    points_corners = list(map(float, points_corners))
+    for i in range(len(points_corners)):
+        points_corners[i] = int(round(points_corners[i]))
+    corners = np.zeros((4, 2), dtype=np.float32)
+    helper = ""
+    for i in range(0, len(points_corners), 2):
+        corners[i // 2, 0] = points_corners[i]
+        corners[i // 2, 1] = points_corners[i+1]
+        helper = helper + "_" + str(corners[i // 2, 0]) + "_" + str(corners[i // 2, 1])
+
+    final_image = solve_scanner_perspective(image, corners)
+    name_to_archive = "Solution_perspective" + helper + ".png"
+    cv.imwrite(path + "/" + name_to_archive, final_image)
+
+    camino = "/media" + "/" + erase_extension(name) + "/" + name_to_archive
+    return True, camino
+
+# ----------------------------------------
+# ----------------------------------------
+
 #Funciones Contrast_Streching
+# ----------------------------------------
+
+
 def get_ranges(list_colors):
     least_value = 0
     most_value = 0
@@ -372,3 +424,7 @@ def up_image(my_file, name):
     fs = FileSystemStorage(location=ubication_image)
     filename = fs.save(my_file.name, my_file)
     return my_file.name
+
+
+def erase_extension(nombre):
+    return (nombre.split("."))[0]

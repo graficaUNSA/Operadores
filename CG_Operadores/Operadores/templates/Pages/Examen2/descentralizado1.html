@@ -1,0 +1,174 @@
+{% extends "../Examen2/Pedidodeimagen.html" %}
+
+{% load static %}
+{% block centro %}
+<br><br><br>
+<div class="row">
+    <div class="col-md-6">
+        <div>
+            <canvas id="my_canvas" width="400" height="400"> </canvas>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-6">
+                <form method="POST" id="Change_Image">
+                    {% csrf_token %}
+                    <div class="container text-center d-flex justify-content-center align-items-center">
+                            <div class="d-none">
+                                <img src="{{ imagen }}"  id = "ori_img" class="img-thumbnail">
+                                <input type="hidden" id="camino" name="camino" value="{{camino}}" >
+                                <input type="hidden" id="nombre" name="nombre" value="{{nombre}}" >
+                            </div>
+                    </div>
+                    <button type="submit" id="button_1" class="btn btn-warning text-dark btn-banner"> Empezar </button>
+
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form method="POST" id="Modo_scan">
+                    {% csrf_token %}
+                    <div class="container text-center d-flex justify-content-center align-items-center">
+                            <div class="d-none">
+                                <input type="hidden" id="path" name="path" value="{{camino}}" >
+                                <input type="hidden" id="name" name="name" value="{{nombre}}" >
+                            </div>
+                    </div>
+                    <button id="button_2" type="submit" class="btn btn-primary text-dark btn-banner" disabled> Scan </button>
+
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+        <div class="alert alert-danger text-center" role="alert">
+          <p class="font-weight-bold text-danger">Imagen Scaneada</p>
+        </div>
+        <div class="alert alert-dark">
+            <img id="img_result">
+        </div>
+    </div>
+</div>
+
+
+{% endblock centro %}
+
+{% block codes_js %}
+<script src="{% static 'js/scam_canvas.js' %}"></script>
+<script>
+var estado = false;
+var k_pos = 0;
+const canvas = document.getElementById('my_canvas');
+my_canvas.addEventListener("click", function(event){
+    estado = !estado;
+    const point_s = getCursorPosition(canvas, event);
+
+    if (estado)
+    {
+        var distancia_min = 1000.0;
+        for(var i = 0; i < corners_image.length; i++)
+        {
+           const dis = Math.sqrt(Math.pow(corners_image[i][0]-point_s[0], 2) + Math.pow(corners_image[i][1]-point_s[1],2))
+           if(dis < distancia_min)
+           {
+               distancia_min = dis;
+               k_pos = i;
+           }
+        }
+
+        if(distancia_min < 10)
+        {
+            reset();
+            reinicio(k_pos, estado);
+        }
+    }
+    else
+    {
+
+        corners_image[k_pos] = point_s;
+        reset();
+        reinicio(k_pos, estado);
+    }
+
+
+}
+,false);
+
+
+
+draw(document.querySelector('#ori_img'));
+
+</script>
+
+<script>
+var corners_image = [];
+$("#Change_Image").submit(function (e) {
+     e.preventDefault();
+    var serializedData = new FormData(this);
+    //serializedData.append('camino', $(camino).val());
+    //serializedData.append('nombre', $(nombre).val());
+    var variable1 = $(nombre).val();
+
+    var url_to_send = get_url_to_corners(variable1);
+     $.ajax({
+        type: 'POST',
+        url: url_to_send,
+        data: serializedData,
+        processData: false,
+        contentType: false,
+        success: function (response)
+        {
+            if(response.Estado == "OK")
+            {
+
+                corners_image.push(response.esquinas1);
+                corners_image.push(response.esquinas3);
+                corners_image.push(response.esquinas4);
+                corners_image.push(response.esquinas2);
+                dibujar_desde_lista(corners_image);
+                lineas_desde_lista(corners_image);
+                $(button_1).prop('disabled', true);
+                $(button_2).prop('disabled', false);
+            }
+        },
+        error: function (response) {
+              // $(Check).attr("type","readonly");
+              console.log(response);
+               }
+        })
+})
+</script>
+
+<script>
+$("#Modo_scan").submit(function (e) {
+     e.preventDefault();
+    var serializedData = new FormData(this);
+    serializedData.append('esquinas', corners_image);
+    //serializedData.append('nombre', $(nombre).val());
+    var variable1 = $(nombre).val();
+    $(img_result).attr('src', "")
+    var url_to_send = get_url_to_scannear(variable1);
+     $.ajax({
+        type: 'POST',
+        url: url_to_send,
+        data: serializedData,
+        processData: false,
+        contentType: false,
+        success: function (response)
+        {
+            if(response.Estado == "OK")
+            {
+                $(img_result).attr('src', response.imagen_color)
+                console.log(corners_image);
+            }
+        },
+        error: function (response) {
+              // $(Check).attr("type","readonly");
+              console.log(response);
+               }
+        })
+})
+</script>
+{% endblock codes_js %}

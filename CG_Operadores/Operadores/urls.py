@@ -2,12 +2,16 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-
+from . import vistas_scanner
 
 app_name = 'Ops'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('mod_scanner', vistas_scanner.index_vista, name='scanner_index'),
+    path('mod_scanner/<str:name>', vistas_scanner.operators_2, name='scanner_intro'),
+    path('mod_scanner/<str:name>/corners', vistas_scanner.get_corners),
+    path('mod_scanner/<str:name>/scanner', vistas_scanner.make_scanner),
     path('img/<str:name>', views.operators, name='operators'),
     path('img/<str:name>/data_thresholding', views.image_thresholding),
     path('img/<str:name>/data_contrast', views.image_contrast_streching),

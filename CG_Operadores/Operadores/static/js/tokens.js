@@ -13,7 +13,7 @@ $(document).ready(function(){
                 $('#bot').children('#const5').hide();
                 $('#constante').val(127);
                 $('#constante1').val(255);
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Thresholding");
                 break;
             case "2":
@@ -24,7 +24,7 @@ $(document).ready(function(){
                 $('#bot').children('#const5').hide();
                 $('#constante').val(0);
                 $('#constante1').val(100);
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Contrast stretching");
                 break;
             case "3":
@@ -37,7 +37,7 @@ $(document).ready(function(){
                 $('#constante1').val(0);
                 $('#constante2').val(0);
                 $('#constante3').val(0);
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Ecualización de Histograma");
                 break;
             case "4":
@@ -46,7 +46,7 @@ $(document).ready(function(){
                 $('#bot').children('#const3').hide();
                 $('#bot').children('#const4').hide();
                 $('#bot').children('#const5').hide();
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Logaritmico");
                 break;
             case "5":
@@ -55,7 +55,7 @@ $(document).ready(function(){
                 $('#bot').children('#const3').hide();
                 $('#bot').children('#const4').hide();
                 $('#bot').children('#const5').hide();
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Raiz");
                 break;
             case "6":
@@ -64,7 +64,7 @@ $(document).ready(function(){
                 $('#bot').children('#const3').hide();
                 $('#bot').children('#const4').hide();
                 $('#bot').children('#const5').hide();
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Exponencial");
                 break;
             case "7":
@@ -73,7 +73,7 @@ $(document).ready(function(){
                 $('#bot').children('#const3').hide();
                 $('#bot').children('#const4').hide();
                 $('#bot').children('#const5').hide();
-                $('#aritmetica').toggle();
+                $('#aritmetica').hide();
                 $('#resul').children('#enun').text("Imagen_Modificada con Operador Raise to Power");
                 break;
              case "8":

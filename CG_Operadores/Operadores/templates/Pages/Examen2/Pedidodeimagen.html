@@ -4,20 +4,24 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/file-upload-with-preview.min.css' %}">
     <body>
-      {% include "Pages/cabecera.html" %}
 
+
+
+      {% include "Pages/header_2.html" %}
+    <div class="container">
 
       {% block centro %}
 
       {% endblock centro %}
 
-
+    </div>
       {% include "Pages/footer.html" %}
 
       <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
       <script src="{% static 'js/jquery.serializeObject.min.js' %}"></script>
       <script src="{% static 'js/bootstrap.min.js' %}"></script>
       <script src="{% static 'js/header.js' %}"></script>
+      <script src="{% static 'js/funciones.js' %}"></script>
       <script src="{% static 'js/file-upload-with-preview.min.js' %}"></script>
 
       {% block codes_js %}

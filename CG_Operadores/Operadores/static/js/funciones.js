@@ -85,3 +85,15 @@ function get_url_to_send(name,value)
     second_part = conversion_value_to_name(value);
     return first_part+ "/" +second_part;
 }
+
+function get_url_to_corners(name)
+{
+    first_part = erase_extension(name);
+    return first_part + "/corners";
+}
+
+function get_url_to_scannear(name)
+{
+    first_part = erase_extension(name);
+    return first_part + "/scanner";
+}

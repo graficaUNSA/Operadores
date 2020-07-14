@@ -1,0 +1,43 @@
+{% extends "../Examen2/Pedidodeimagen.html" %}
+
+{% load static %}
+
+{% block centro %}
+<div class="container text-center d-flex justify-content-center align-items-center">
+    <img id="image_sp" alt="">
+</div>
+<br>
+<br>
+<div class="container text-center d-flex justify-content-center align-items-center">
+                <form method = "post" enctype="multipart/form-data"  id="formData">
+                        {% csrf_token %}
+                        <input type="file" id="Original" name="Original" class="btn btn-warning text-dark btn-banner" >
+                        <br>
+                        <br>
+                        <button type="submit" class="btn btn-warning text-dark btn-banner" >Cargar</button>
+                </form>
+</div>
+
+{% endblock centro %}
+
+
+{% block codes_js %}
+<script>
+
+    const $form = document.querySelector('#formData');
+    const $file = document.querySelector('#Original');
+    function renderImage(formData) {
+      const file = formData.get('Original');
+      const $image = document.querySelector('#image_sp');
+      const image = URL.createObjectURL(file);
+      $image.setAttribute('src', image);
+
+    }
+
+    $file.addEventListener('change', (event) => {
+      const formData = new FormData($form);
+      renderImage(formData);
+    })
+
+</script>
+{% endblock codes_js %}
