@@ -104,6 +104,7 @@ def detect_corners(img):
     columna = 0
     fila = 0
     contador = 0
+    rango_valido = 50
     # detectar primeras esquinas empezando por izquierda, pasando por columnas
     for i in range(columns):
         estado = False
@@ -118,7 +119,7 @@ def detect_corners(img):
 
     for i in range(rows-1, 0, -1):
         if img[i, columna] == 255:
-            if abs(i - fila) < 20:
+            if abs(i - fila) < rango_valido:
                 esquinas[contador, 0] = columna
                 esquinas[contador, 1] = (fila + i) // 2
                 contador = contador + 1
@@ -145,7 +146,7 @@ def detect_corners(img):
 
     for i in range(rows-1, 0, -1):
         if img[i, columna] == 255:
-            if abs(i - fila) < 20:
+            if abs(i - fila) < rango_valido:
                 esquinas[contador, 0] = columna
                 esquinas[contador, 1] = (fila + i) // 2
                 contador = contador + 1
@@ -176,10 +177,10 @@ def detect_corners(img):
         for i in range(columns - 1, 0, -1):
             if img[fila, i] == 255:
 
-                if abs(i - columna) < 20:
+                if abs(i - columna) < rango_valido:
                     flag = False
                     for k in range(contador):
-                        if abs(esquinas[k, 0] - columna) < 20 and abs(esquinas[k, 1] - fila) < 20:
+                        if abs(esquinas[k, 0] - columna) < rango_valido and abs(esquinas[k, 1] - fila) < rango_valido:
                             flag = True
                             break
                     if not flag:
@@ -190,7 +191,7 @@ def detect_corners(img):
                 else:
                     flag = False
                     for k in range(contador):
-                        if abs(esquinas[k, 0] - columna) < 20 and abs(esquinas[k, 1] - fila) < 20:
+                        if abs(esquinas[k, 0] - columna) < rango_valido and abs(esquinas[k, 1] - fila) < rango_valido:
                             flag = True
                             break
                     if not flag:
@@ -200,7 +201,7 @@ def detect_corners(img):
 
                     flag = False
                     for k in range(contador):
-                        if abs(esquinas[k, 0] - columna) < 20 and abs(esquinas[k, 1] - fila) < 20:
+                        if abs(esquinas[k, 0] - columna) < rango_valido and abs(esquinas[k, 1] - fila) < rango_valido:
                             flag = True
                             break
                     if not flag:
@@ -226,10 +227,10 @@ def detect_corners(img):
 
         for i in range(columns - 1, 0, -1):
             if img[fila, i] == 255:
-                if abs(i - columna) < 20:
+                if abs(i - columna) < rango_valido:
                     flag = False
                     for k in range(contador):
-                        if abs(esquinas[k, 0] - columna) < 20 and abs(esquinas[k, 1] - fila) < 20:
+                        if abs(esquinas[k, 0] - columna) < rango_valido and abs(esquinas[k, 1] - fila) < rango_valido:
                             flag = True
                             break
                     if not flag:
@@ -239,7 +240,7 @@ def detect_corners(img):
                 else:
                     flag = False
                     for k in range(contador):
-                        if abs(esquinas[k, 0] - columna) < 20 and abs(esquinas[k, 1] - fila) < 20:
+                        if abs(esquinas[k, 0] - columna) < rango_valido and abs(esquinas[k, 1] - fila) < rango_valido:
                             flag = True
                             break
                     if not flag:
@@ -248,7 +249,7 @@ def detect_corners(img):
                         contador = contador + 1
                     flag = False
                     for k in range(contador):
-                        if abs(esquinas[k, 0] - columna) < 20 and abs(esquinas[k, 1] - fila) < 20:
+                        if abs(esquinas[k, 0] - columna) < rango_valido and abs(esquinas[k, 1] - fila) < rango_valido:
                             flag = True
                             break
                     if not flag:
@@ -409,11 +410,66 @@ def copy_warp_perspective(image, matrix, dim_out):
 
 
 # --------------------------------------
+# Erotion
+# --------------------------------------
+def color_get_erotion(data, color):
+    for i in range(len(data)):
+        if color[0] != data[i, 0] or color[1] != data[i, 1] or color[2] != data[i, 2]:
+            return data[i]
+    return color
+
+
+def erotion(imagen, tam_kernel):
+    val_start = tam_kernel // 2
+    image_mod = np.copy(imagen)
+    rows1, columns1 = imagen.shape[:2]
+    for i in range(val_start, rows1):
+        for j in range(columns1):
+            image_mod[i, j] = color_get_erotion(imagen[i-val_start:i+val_start, j], (0, 0, 0))
+    return image_mod
+
+# --------------------------------------
+# Dilation
+# --------------------------------------
+
+
+def color_get_dilation(data, color):
+    rows1, columns1 = data.shape[:2]
+    for i in range(rows1):
+        for j in range(columns1):
+            if color[0] == data[i, j, 0] and color[1] == data[i, j, 1] and color[2] == data[i, 2]:
+                return True, color
+    return False, None
+
+
+def dilation(imagen, tam_kernel):
+    val_start = tam_kernel // 2
+    image_mod = np.copy(imagen)
+    rows1, columns1 = imagen.shape[:2]
+    for i in range(val_start, rows1):
+        for j in range(val_start, columns1):
+            state = color_get_dilation(imagen[i-val_start:i+val_start, j - val_start: j + val_start], (0, 0, 0))
+            if state[0]:
+                image_mod[i, j] = state[1]
+    return image_mod
+
+# --------------------------------------
+# Función closing
+# --------------------------------------
+
+
+def closing_fun(image, kernel):
+    image_answer_2 = dilation(image, kernel)
+    answer = erotion(image_answer_2, kernel)
+    return answer
+# --------------------------------------
 # Función scanner to solve
 # --------------------------------------
+
 
 def solve_scanner_perspective(image, points):
     rect, dst, maxWidth, maxHeight = get_points_limits(image, points)
     M = copy_get_perspective_transform(rect, dst)
     image_answer_2 = copy_warp_perspective(image, M, (maxWidth, maxHeight))
+    image_answer_2 = closing_fun(image_answer_2, 3)
     return image_answer_2
