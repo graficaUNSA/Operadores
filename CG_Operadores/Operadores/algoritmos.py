@@ -1,5 +1,40 @@
+import math
+
 import numpy as np
 import cv2 as cv
+
+
+def thresholding_adaptative(original, umbral):
+    return np.where(original > umbral, 255, 0)
+
+
+def get_average(image1, max_x, max_y, windows_size1):
+    g = np.copy(image1)
+    for pos_x in range(max_x):
+        for pos_y in range(max_y):
+            left = windows_size1 // 2
+            right = windows_size1 - left - 1
+            p_range_x = pos_x - left
+            s_range_x = pos_x + right + 1
+            p_range_y = pos_y - left
+            s_range_y = pos_y + right + 1
+            if p_range_x < 0:
+                p_range_x = 0
+            if p_range_y < 0:
+                p_range_y = 0
+            if s_range_x > max_x + 1:
+                s_range_x = max_x + 1
+            if s_range_y > max_y + 1:
+                s_range_y = max_y + 1
+            g[pos_x][pos_y] = np.mean(image1[p_range_x:s_range_x, p_range_y:s_range_y])
+    return g
+
+
+def solve_thresholding_adaptative(image_original, windows_s, constant_s):
+    values = image_original.shape
+    g = np.uint8(get_average(image_original, values[0], values[1], windows_s) - constant_s)
+    g = np.uint8(thresholding_adaptative(image_original, g))
+    return g
 
 
 def histogram_equalization(img, data):
@@ -90,12 +125,69 @@ def filtro_conservating(imagen):
     rows, columns = img.shape
     for i in range(1, rows-1):
         for j in range(1, columns-1):
-            minimo, maximo = get_values(img[i-1:i+2, j-1:j+2])
+            minimo, maximo = get_values(imagen[i-1:i+2, j-1:j+2])
             if img[i, j] < minimo:
                 img[i, j] = minimo
             elif img[i, j] > maximo:
                 img[i, j] = maximo
     return img
+
+
+def detect_advance(img, punto, superior, lado):
+    best_point = np.array(punto, dtype=int)
+    print(best_point)
+    while img[best_point[1], best_point[0]]:
+        if superior == 0 and lado == 0:
+            if img[best_point[1] - 1, best_point[0]] == 255:
+                best_point[1] = best_point[1] - 1
+            elif img[best_point[1], best_point[0]-1] == 255:
+                best_point[0] = best_point[0]-1
+            else:
+                break
+        if superior == 1 and lado == 0:
+            if img[best_point[1] - 1, best_point[0]] == 255:
+                best_point[1] = best_point[1] - 1
+            elif img[best_point[1], best_point[0]+1] == 255:
+                best_point[0] = best_point[0]+1
+            else:
+                break
+
+        if superior == 0 and lado == 1:
+            if img[best_point[1] + 1, best_point[0]] == 255:
+                best_point[1] = best_point[1] + 1
+            elif img[best_point[1], best_point[0]-1] == 255:
+                best_point[0] = best_point[0]-1
+            else:
+                break
+
+        if superior == 1 and lado == 1:
+            if img[best_point[1] + 1, best_point[0]] == 255:
+                best_point[1] = best_point[1] + 1
+            elif img[best_point[1], best_point[0]+1] == 255:
+                best_point[0] = best_point[0]+1
+            else:
+                break
+
+    return best_point
+
+
+def help_detect_corners(img, corners):
+    another_corners = np.zeros((4, 2), dtype=np.float32)
+    helper = corners[corners[:, 0].argsort()]
+    if helper[0, 1] < helper[1, 1]:
+        another_corners[0] = detect_advance(img, helper[0, :], 0, 0)
+        another_corners[1] = detect_advance(img, helper[1, :], 0, 1)
+    else:
+        another_corners[0] = detect_advance(img, helper[1, :], 0, 0)
+        another_corners[1] = detect_advance(img, helper[0, :], 0, 1)
+    if helper[2, 1] < helper[3, 1]:
+        another_corners[2] = detect_advance(img, helper[2, :], 1, 0)
+        another_corners[3] = detect_advance(img, helper[3, :], 1, 1)
+    else:
+        another_corners[2] = detect_advance(img, helper[3, :], 1, 0)
+        another_corners[3] = detect_advance(img, helper[2, :], 1, 1)
+
+    return another_corners
 
 
 def detect_corners(img):
@@ -285,6 +377,7 @@ def detect_corners(img):
 
     esquinas[contador, 0] = punto_referencia[0]
     esquinas[contador, 1] = punto_referencia[1]
+    esquinas = help_detect_corners(img, esquinas)
     return esquinas
 
 
@@ -406,6 +499,14 @@ def copy_warp_perspective(image, matrix, dim_out):
             valor_y = valores[1, 0]
             if 0 <= valor_x < image.shape[1] and 0 <= valor_y < image.shape[0]:
                 image_blank[y, x] = image[int(valor_y), int(valor_x)]
+
+    image_blank[0, 0] = image_blank[1, 1]
+    for i in range(1, rows1):
+        image_blank[0, i] = image_blank[1, i]
+
+    for i in range(1, columns1):
+        image_blank[i, 0] = image_blank[i, 1]
+
     return image_blank
 
 
@@ -414,18 +515,26 @@ def copy_warp_perspective(image, matrix, dim_out):
 # --------------------------------------
 def color_get_erotion(data, color):
     for i in range(len(data)):
-        if color[0] != data[i, 0] or color[1] != data[i, 1] or color[2] != data[i, 2]:
-            return data[i]
+        if type(color) != int:
+            if color[0] != data[i, 0] or color[1] != data[i, 1] or color[2] != data[i, 2]:
+                return data[i]
+        else:
+            if color != data[i]:
+                return data[i]
+
     return color
 
 
 def erotion(imagen, tam_kernel):
     val_start = tam_kernel // 2
     image_mod = np.copy(imagen)
+    comparador = 0
+    if len(imagen.shape) == 3:
+        comparador = (0, 0, 0)
     rows1, columns1 = imagen.shape[:2]
     for i in range(val_start, rows1):
         for j in range(columns1):
-            image_mod[i, j] = color_get_erotion(imagen[i-val_start:i+val_start, j], (0, 0, 0))
+            image_mod[i, j] = color_get_erotion(imagen[i-val_start:i+val_start, j], comparador)
     return image_mod
 
 # --------------------------------------
@@ -437,18 +546,25 @@ def color_get_dilation(data, color):
     rows1, columns1 = data.shape[:2]
     for i in range(rows1):
         for j in range(columns1):
-            if color[0] == data[i, j, 0] and color[1] == data[i, j, 1] and color[2] == data[i, 2]:
-                return True, color
+            if type(color) != int:
+                if color[0] == data[i, j, 0] and color[1] == data[i, j, 1] and color[2] == data[i, j, 2]:
+                    return True, color
+            else:
+                if color == data[i, j]:
+                    return True, color
     return False, None
 
 
 def dilation(imagen, tam_kernel):
     val_start = tam_kernel // 2
     image_mod = np.copy(imagen)
+    comparador = 0
+    if len(imagen.shape) == 3:
+        comparador = (0, 0, 0)
     rows1, columns1 = imagen.shape[:2]
     for i in range(val_start, rows1):
         for j in range(val_start, columns1):
-            state = color_get_dilation(imagen[i-val_start:i+val_start, j - val_start: j + val_start], (0, 0, 0))
+            state = color_get_dilation(imagen[i-val_start:i+val_start, j - val_start: j + val_start], comparador)
             if state[0]:
                 image_mod[i, j] = state[1]
     return image_mod
@@ -458,10 +574,33 @@ def dilation(imagen, tam_kernel):
 # --------------------------------------
 
 
-def closing_fun(image, kernel):
-    image_answer_2 = dilation(image, kernel)
-    answer = erotion(image_answer_2, kernel)
+def closing_fun(image, kernel_dil, kernel_erot):
+    image_answer_2 = dilation(image, kernel_dil)
+    answer = erotion(image_answer_2, kernel_erot)
     return answer
+# --------------------------------------
+# Función filtro gaussiano
+# --------------------------------------
+
+
+def get_matrix_gaussian(dimension, desviacion):
+    matrix = np.ndarray((dimension, dimension), dtype=float)
+    for i in range(dimension):
+        for j in range(dimension):
+            matrix[i, j] = math.e**((- j**2 + i**2) / (2 * desviacion**2)) / (2 * math.pi * desviacion**2)
+    return matrix
+
+
+def filtro_gaussiano(img, dim):
+    image_blank = np.copy(img)
+    rows, columns = img.shape
+    matrix = get_matrix_gaussian(dim, 1)
+    inicio = dim // 2
+    for i in range(inicio, rows):
+        for j in range(inicio, columns):
+            image_blank[i, j] = int(round(np.sum(image_blank[i, j] * matrix)))
+
+    return image_blank
 # --------------------------------------
 # Función scanner to solve
 # --------------------------------------
@@ -471,5 +610,5 @@ def solve_scanner_perspective(image, points):
     rect, dst, maxWidth, maxHeight = get_points_limits(image, points)
     M = copy_get_perspective_transform(rect, dst)
     image_answer_2 = copy_warp_perspective(image, M, (maxWidth, maxHeight))
-    image_answer_2 = closing_fun(image_answer_2, 3)
+    image_answer_2 = closing_fun(image_answer_2, 2, 2)
     return image_answer_2

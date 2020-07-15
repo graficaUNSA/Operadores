@@ -53,11 +53,13 @@ def make_scanner(request, name):
         path = request.POST['path']
         values = request.POST['name']
         esquinas = request.POST['esquinas']
-        estado, image_answer = get_image_perspective(path, values, esquinas)
+        estado, image_color, image_gris, image_negro = get_image_perspective(path, values, esquinas)
         if estado:
             return JsonResponse({
                 'Estado': "OK",
-                'imagen_color': image_answer,
+                'imagen_color': image_color,
+                'imagen_gris': image_gris,
+                'imagen_negro': image_negro,
             })
         else:
             return JsonResponse({'State': 'fail'})

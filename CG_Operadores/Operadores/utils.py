@@ -291,11 +291,19 @@ def get_image_perspective(path, name, points_corners):
         helper = helper + "_" + str(corners[i // 2, 0]) + "_" + str(corners[i // 2, 1])
 
     final_image = solve_scanner_perspective(image, corners)
-    name_to_archive = "Solution_perspective" + helper + ".png"
-    cv.imwrite(path + "/" + name_to_archive, final_image)
+    name_to_archive = "Solution_perspective" + helper
+    cv.imwrite(path + "/" + name_to_archive + "_c.png", final_image)
+    gray = cv.cvtColor(np.uint8(final_image), cv.COLOR_BGR2GRAY)
+    cv.imwrite(path + "/" + name_to_archive + "_g.png", gray)
+    blanco_negro = filtro_gaussiano(gray, 2)
+    blanco_negro = filtro_conservating(blanco_negro)
+    blanco_negro = solve_thresholding_adaptative(blanco_negro, 7, 10)
+    cv.imwrite(path + "/" + name_to_archive + "_b.png", blanco_negro)
 
-    camino = "/media" + "/" + erase_extension(name) + "/" + name_to_archive
-    return True, camino
+    camino_color = "/media" + "/" + erase_extension(name) + "/" + name_to_archive+ "_c.png"
+    camino_gris = "/media" + "/" + erase_extension(name) + "/" + name_to_archive + "_g.png"
+    camino_blanco_negro = "/media" + "/" + erase_extension(name) + "/" + name_to_archive + "_b.png"
+    return True, camino_color, camino_gris, camino_blanco_negro
 
 # ----------------------------------------
 # ----------------------------------------

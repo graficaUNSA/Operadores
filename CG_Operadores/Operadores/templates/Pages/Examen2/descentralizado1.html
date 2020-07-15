@@ -49,6 +49,22 @@
         <div class="alert alert-dark text-center">
             <img id="img_result">
         </div>
+        <br><br><br>
+
+        <div class="row">
+            <div class="col-md-4">
+                    <input type="hidden" id="img_color" name="img_color" value="">
+                    <button id= "color_button" type="submit" class="btn btn-primary text-white btn-banner" disabled> Imagen a color </button>
+            </div>
+            <div class="col-md-4">
+                    <input type="hidden" id="img_grises" name="img_grises" value="">
+                    <button id= "gris_button" type="submit" class="btn btn-secondary text-white btn-banner" disabled> Escala de grises </button>
+            </div>
+            <div class="col-md-4">
+                    <input type="hidden" id="img_blanco_negro" name="img_blanco_negro" value="">
+                    <button id= "negro_button" type="submit" class="btn btn-dark text-white btn-banner" disabled> Blanco y Negro </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -57,6 +73,28 @@
 
 {% block codes_js %}
 <script src="{% static 'js/scam_canvas.js' %}"></script>
+<script>
+    $(color_button).click(function() {
+      $(img_result).attr('src', $(img_color).val())
+      $(color_button).prop('disabled', true);
+      $(gris_button).prop('disabled', false);
+      $(negro_button).prop('disabled', false);
+    });
+
+    $(gris_button).click(function() {
+      $(img_result).attr('src', $(img_grises).val())
+      $(color_button).prop('disabled', false);
+      $(gris_button).prop('disabled', true);
+      $(negro_button).prop('disabled', false);
+    });
+
+    $(negro_button).click(function() {
+      $(img_result).attr('src', $(img_blanco_negro).val())
+      $(color_button).prop('disabled', false);
+      $(gris_button).prop('disabled', false);
+      $(negro_button).prop('disabled', true);
+    });
+</script>
 <script>
 var estado = false;
 var k_pos = 0;
@@ -161,6 +199,12 @@ $("#Modo_scan").submit(function (e) {
             if(response.Estado == "OK")
             {
                 $(img_result).attr('src', response.imagen_color)
+                $(img_color).val(response.imagen_color);
+                $(img_grises).val(response.imagen_gris);
+                $(img_blanco_negro).val(response.imagen_negro);
+                $(color_button).prop('disabled', true);
+                $(gris_button).prop('disabled', false);
+                $(negro_button).prop('disabled', false);
                 console.log(corners_image);
             }
         },
